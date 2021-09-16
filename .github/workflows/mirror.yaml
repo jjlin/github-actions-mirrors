@@ -1,0 +1,47 @@
+name: Mirror Git repos
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '25 9 * * *'
+
+jobs:
+  pagure-io-go:
+    name: Mirror `https://pagure.io/go`
+    runs-on: ubuntu-latest
+    steps:
+      - name: Restore repo from cache
+        id: cache-repo
+        uses: actions/cache@v2
+        with:
+          path: pagure-io-go
+          key: pagure-io-go
+
+      - name: Clone repo (if not cached)
+        if: steps.cache-repo.outputs.cache-hit != 'true'
+        run: git clone --mirror https://pagure.io/go.git pagure-io-go
+
+      - name: Update repo (if cached)
+        if: steps.cache-repo.outputs.cache-hit == 'true'
+        working-directory: pagure-io-go
+        run: git remote update --prune origin
+
+      - name: Configure deploy key
+        run: |
+          umask 077
+          mkdir -p ~/.ssh
+          cat <<<'${{ secrets.PAGURE_IO_GO_DEPLOY_KEY }}' > ~/.ssh/id_ed25519
+
+      - name: Push repo to mirror
+        working-directory: pagure-io-go
+        run: |
+          # Ignore errors like:
+          # ! [remote rejected] refs/pull/1/head -> refs/pull/1/head (deny updating a hidden ref)
+          # ! [remote rejected] refs/pull/2/head -> refs/pull/2/head (deny updating a hidden ref)
+          # ! [remote rejected] refs/pull/3/head -> refs/pull/3/head (deny updating a hidden ref)
+          # error: failed to push some refs to 'github.com:jjlin/golang-fips.git'
+          git push --mirror git@github.com:jjlin/golang-fips.git || true
+
+      - name: Run housekeeping on cached repo
+        working-directory: pagure-io-go
+        run: git gc --auto
