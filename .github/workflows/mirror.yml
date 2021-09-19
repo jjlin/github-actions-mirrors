@@ -14,19 +14,19 @@ jobs:
         id: cache-repo
         uses: actions/cache@v2
         with:
-          path: pagure-io-go
-          key: pagure-io-go-${{ github.run_id }}
+          path: ${{ github.job }}
+          key: ${{ github.job }}-${{ github.run_number }}
           restore-keys: |
-            pagure-io-go-
+            ${{ github.job }}-
 
       - name: Clone repo (if not restored)
         run: |
-          if [[ ! -e pagure-io-go ]]; then
-            git clone --mirror https://pagure.io/go.git pagure-io-go
+          if [[ ! -e ${{ github.job }} ]]; then
+            git clone --mirror https://pagure.io/go.git ${{ github.job }}
           fi
 
       - name: Update repo
-        working-directory: pagure-io-go
+        working-directory: ${{ github.job }}
         run: git remote update --prune origin
 
       - name: Configure SSH deploy key
@@ -37,7 +37,7 @@ jobs:
           ssh-private-key: ${{ secrets.DEPLOY_KEY_PAGURE_IO_GO }}
 
       - name: Push repo to mirror
-        working-directory: pagure-io-go
+        working-directory: ${{ github.job }}
         run: |
           # Ignore errors like:
           # ! [remote rejected] refs/pull/1/head -> refs/pull/1/head (deny updating a hidden ref)
@@ -47,5 +47,5 @@ jobs:
           git push --mirror git@github.com:jjlin/golang-fips.git || true
 
       - name: Run housekeeping on cached repo
-        working-directory: pagure-io-go
+        working-directory: ${{ github.job }}
         run: git gc --auto
