@@ -15,14 +15,17 @@ jobs:
         uses: actions/cache@v2
         with:
           path: pagure-io-go
-          key: pagure-io-go
+          key: pagure-io-go-${{ github.run_id }}
+          restore-keys: |
+            pagure-io-go-
 
-      - name: Clone repo (if not cached)
-        if: steps.cache-repo.outputs.cache-hit != 'true'
-        run: git clone --mirror https://pagure.io/go.git pagure-io-go
+      - name: Clone repo (if not restored)
+        run: |
+          if [[ ! -e pagure-io-go ]]; then
+            git clone --mirror https://pagure.io/go.git pagure-io-go
+          fi
 
-      - name: Update repo (if cached)
-        if: steps.cache-repo.outputs.cache-hit == 'true'
+      - name: Update repo
         working-directory: pagure-io-go
         run: git remote update --prune origin
 
