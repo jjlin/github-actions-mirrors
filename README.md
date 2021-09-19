@@ -1,4 +1,4 @@
-![Mirroring Status](https://github.com/jjlin/github-actions-mirrors/actions/workflows/mirror.yml/badge.svg)
+[![Mirroring Status](https://github.com/jjlin/github-actions-mirrors/actions/workflows/mirror.yml/badge.svg)](https://github.com/jjlin/github-actions-mirrors/actions/workflows/mirror.yml)
 
 This repo uses GitHub Actions to mirror the following repos to GitHub:
 
