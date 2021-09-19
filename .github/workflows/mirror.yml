@@ -1,4 +1,4 @@
-name: Mirror Git repos
+name: Mirroring
 
 on:
   schedule:
