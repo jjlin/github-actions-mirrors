@@ -30,7 +30,7 @@ jobs:
         run: git remote update --prune origin
 
       - name: Configure SSH deploy key
-        uses: webfactory/ssh-agent@5f066a372ec13036ab7cb9a8adf18c936f8d2043 # v0.5.3
+        uses: webfactory/ssh-agent@fc49353b67b2b7c1e0e6a600572d01a69f2672dd # v0.5.4
         with:
           # Deploy key comment must include the GitHub repo:
           # https://github.com/webfactory/ssh-agent#support-for-github-deploy-keys
